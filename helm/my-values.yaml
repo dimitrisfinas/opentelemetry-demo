@@ -1,0 +1,42 @@
+# Example of values file with public ingress can be found here: https://github.com/dimitrisfinas/opentelemetry-helm-charts/blob/main/charts/opentelemetry-demo/examples/public-hosted-ingress/values.yaml
+
+components:
+#  frontend:
+#    env:
+#      - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+#        value: "http://<my-ip>:4318/v1/traces"
+
+  frontendProxy:
+    serviceType: LoadBalancer
+
+opentelemetry-collector:
+#  service:
+#    type: LoadBalancer
+
+  config:
+#    receivers:
+#      k8s_cluster:
+#        collection_interval: 10s
+
+    processors:
+      resourcedetection/gke:
+        detectors: [env, gke]
+        timeout: 2s
+        override: false
+
+    exporters:
+      otlp/lightstep:
+        endpoint: ingest.lightstep.com:443
+        headers:
+          "lightstep-access-token": "${LIGHTSTEP_ACCESS_TOKEN}"
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch, resourcedetection/gke]
+          exporters: [logging, otlp/lightstep]
+        metrics:
+          receivers: [otlp]
+          processors: [batch, resourcedetection/gke]
+          exporters: [logging, otlp/lightstep]
