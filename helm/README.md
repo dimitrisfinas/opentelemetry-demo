@@ -2,6 +2,20 @@
 
 - create a custom `values.yaml` file
 
+- then, deploy using it with
+```shell
+helm install my-otel-demo open-telemetry/opentelemetry-demo --values ./helm/my-values.yaml
+```
+
+- if you want to test before what is generated, you can use
+```shell
+helm install my-otel-demo open-telemetry/opentelemetry-demo --dry-run --values ./helm/my-values.yaml
+```
+
+- if you want to upgrade existing release
+```shell
+helm upgrade my-otel-demo open-telemetry/opentelemetry-demo --values ./helm/my-values.yaml
+```
 
 ### Export telemetry data to Lightstep
 
