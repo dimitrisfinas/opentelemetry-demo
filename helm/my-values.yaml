@@ -29,7 +29,7 @@ opentelemetry-collector:
       otlp/lightstep:
         endpoint: ingest.lightstep.com:443
         headers:
-          "lightstep-access-token": "x/r5svs+thkbJHzJQb+VUu5NUEcDLeGdv/Fodquh0BxMd/PzSW+bc3aQwcniUx3AwipLSVMEj/M1OvES+PIaHcLKNin8IeCiBK9LioKv"
+          "lightstep-access-token": "<YOUR_LIGHTSTEP_ACCESS_TOKEN>"
 
     service:
       pipelines:
