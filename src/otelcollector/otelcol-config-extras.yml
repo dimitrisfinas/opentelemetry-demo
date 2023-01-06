@@ -1,18 +1,18 @@
   exporters:
     logging:
       logLevel: debug
-    otlp/ls:
+    otlp/lightstep:
       endpoint: ingest.lightstep.com:443
-      headers: 
-        "lightstep-access-token": <lightstep_access_token>
-  
+      headers:
+        "lightstep-access-token": "${LIGHTSTEP_ACCESS_TOKEN}"
+
   service:
     pipelines:
       traces:
         receivers: [otlp]
         processors: [batch]
-        exporters: [logging, otlp/ls]
+        exporters: [logging, otlp/lightstep]
       metrics:
         receivers: [otlp]
         processors: [batch]
-        exporters: [logging, otlp/ls]
+        exporters: [logging, otlp/lightstep]
