@@ -1,0 +1,36 @@
+---
+# Source: opentelemetry-collector/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-servicenow-collector
+  labels:
+    app.kubernetes.io/name: otel-servicenow-collector
+    app.kubernetes.io/version: "0.1.0"
+data:
+  config: |
+    receivers:
+      # Pull traces from different Lightstep streams
+      lightstep-streams/demo:
+        organization: "Lightstep"
+        project: "dev-dimitris"
+        api_key: "$LIGHTSTEP_API_KEY"
+        window_size: 5m
+        stream_id: yht84Qs1
+
+    processors:
+      batch:
+
+    exporters:
+      service:
+        scraper:
+          endpoint: 0.0.0.0:55688
+
+      logging:
+
+    service:
+      pipelines:
+        traces:
+          receivers: [lightstep-streams/demo]
+          processors:[ batch ]
+          exporters: [logging, service]

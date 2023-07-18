@@ -1,0 +1,18 @@
+---
+# Source: opentelemetry-collector/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-servicenow-collector
+  labels:
+    app.kubernetes.io/name: otel-servicenow-collector
+    app.kubernetes.io/version: "0.1.0"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: scraper
+      port: 55688
+      targetPort: 55688
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: otel-servicenow-collector

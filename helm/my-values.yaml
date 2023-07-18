@@ -14,10 +14,13 @@ opentelemetry-collector:
 #    type: LoadBalancer
 
   config:
-    # In order to enable k8s cluster metrics, don't forget to provide sufficient role to your collector Service Account
     receivers:
+      # In order to enable k8s cluster metrics, don't forget to provide sufficient role to your collector Service Account
       k8s_cluster:
         collection_interval: 10s
+
+      prometheus:
+        config:
 
     processors:
       resourcedetection/gke:
@@ -29,7 +32,7 @@ opentelemetry-collector:
       otlp/lightstep:
         endpoint: ingest.lightstep.com:443
         headers:
-          "lightstep-access-token": "<YOUR_LIGHTSTEP_ACCESS_TOKEN>"
+          "lightstep-access-token": "x/r5svs+thkbJHzJQb+VUu5NUEcDLeGdv/Fodquh0BxMd/PzSW+bc3aQwcniUx3AwipLSVMEj/M1OvES+PIaHcLKNin8IeCiBK9LioKv"
 
     service:
       pipelines:
@@ -38,6 +41,6 @@ opentelemetry-collector:
           processors: [batch, resourcedetection/gke]
           exporters: [logging, otlp/lightstep]
         metrics:
-          receivers: [otlp, k8s_cluster]
+          receivers: [otlp, k8s_cluster, prometheus]
           processors: [batch, resourcedetection/gke]
           exporters: [logging, otlp/lightstep]

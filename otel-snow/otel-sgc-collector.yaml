@@ -1,0 +1,87 @@
+---
+# Source: opentelemetry-collector/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otel-servicenow-collector
+  labels:
+    app.kubernetes.io/name: otel-servicenow-collector
+    app.kubernetes.io/version: "0.1.0"
+
+
+---
+# Source: opentelemetry-collector/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-servicenow-collector
+  labels:
+    app.kubernetes.io/name: otel-servicenow-collector
+    app.kubernetes.io/version: "0.1.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-servicenow-collector
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: otel-servicenow-collector
+
+    spec:
+      serviceAccountName: otel-servicenow-collector
+      securityContext:
+        {}
+      containers:
+        - name: otel-servicenow-collector
+          securityContext:
+            {}
+          image: "ghcr.io/lightstep/lightstep-partner-toolkit-collector:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: scraper
+              containerPort: 55688
+              protocol: TCP
+          env:
+            - name: LIGHTSTEP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: otel-servicenow-collector
+                  key: lightstep-api-key
+                  optional: false
+          resources:
+            limits:
+              cpu: 256m
+              memory: 125Mi
+          volumeMounts:
+            - mountPath: /conf
+              name: otel-servicenow-collector-configmap
+      volumes:
+        - name: otel-servicenow-collector-configmap
+          configMap:
+            name: otel-servicenow-collector
+            items:
+              - key: config
+                path: config.yaml
+
+
+---
+# Source: opentelemetry-collector/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-servicenow-collector
+  labels:
+    app.kubernetes.io/name: otel-servicenow-collector
+    app.kubernetes.io/version: "0.1.0"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: scraper
+      port: 55688
+      targetPort: 55688
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: otel-servicenow-collector
